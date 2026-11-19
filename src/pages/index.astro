@@ -1,0 +1,330 @@
+---
+import Layout from '../layouts/Layout.astro';
+import VideoAudioRemover from '../components/VideoAudioRemover.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { TRANSLATIONS } from '../i18n/translations';
+
+const t = TRANSLATIONS.en;
+
+const pageTitle = 'Remove Audio from Video Online Free — Private Video Muter';
+const pageDescription =
+  'Remove audio from video online free with zero uploads. Mute MP4, MOV, or WebM videos without watermark directly in your browser—100% private.';
+
+const faqs = [
+  {
+    question: 'How can I remove audio from video online free without uploading my file?',
+    answer:
+      'RemoveAudio runs FFmpeg directly inside your browser using WebAssembly. When you drop or select a clip to mute video online, all processing stays in your device’s local memory—making it a 100% private video muter with zero server uploads and zero data storage.',
+  },
+  {
+    question: 'Does RemoveAudio mute video without watermark or require an account?',
+    answer:
+      'Yes. You can mute video without watermark and mute video no sign up, email registration, or daily limits. Your exported video stays completely clean and untouched visually.',
+  },
+  {
+    question: 'Can I remove background noise from video or remove music from video without losing quality?',
+    answer:
+      'Yes. Whether you need to remove background noise from video, remove music from video, or delete audio from video altogether, RemoveAudio performs a lossless stream copy (-c:v copy -an). It strips the audio track while leaving every video frame untouched for instant results and 100% original clarity.',
+  },
+  {
+    question: 'Which formats work when I remove sound from video here?',
+    answer:
+      'You can mute MP4 online as well as MOV, WebM, MKV, and AVI videos. Drop a single clip for instant muting or select multiple videos to strip audio privately in a local batch queue.',
+  },
+  {
+    question: 'Can I use RemoveAudio as an offline mute video tool?',
+    answer:
+      'Yes. Click "Add to Home Screen" in the navigation bar to install RemoveAudio as a Progressive Web App. Once cached, this browser video audio remover works 100% offline—even in airplane mode.',
+  },
+];
+
+const webAppSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'RemoveAudio',
+  url: 'https://removeaudio.github.io/',
+  description: pageDescription,
+  applicationCategory: 'MultimediaApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript and WebAssembly',
+  isAccessibleForFree: true,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath="/"
+>
+  <Fragment slot="head">
+    <JsonLd schema={webAppSchema} />
+    <JsonLd schema={faqSchema} />
+  </Fragment>
+
+  <!-- ABOVE THE FOLD: Strictly H1, Hero Subtitle, and Interactive Tool Box -->
+  <section class="hero-viewport" aria-labelledby="hero-heading">
+    <div class="hero-header">
+      <h1 id="hero-heading" class="hero-title" data-i18n="hero.title">
+        {t['hero.title']}
+      </h1>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">
+        {t['hero.subtitle']}
+      </p>
+    </div>
+
+    <VideoAudioRemover />
+  </section>
+
+  <!-- BELOW THE FOLD: Helpful Overview & Concise 5-Question FAQ -->
+  <div class="below-fold">
+    <section class="seo-section" aria-labelledby="overview-heading">
+      <article class="overview-card">
+        <div class="section-intro">
+          <h2 id="overview-heading" class="section-title">
+            Private Client-Side Video Muter — Lossless &amp; Instant
+          </h2>
+          <p class="section-lead">
+            Traditional online editors force you to wait while large recordings upload to remote cloud servers. RemoveAudio takes a better approach: it is a lightweight <strong>browser video audio remover</strong> powered by WebAssembly FFmpeg. Because everything runs locally on your machine, you can <strong>remove audio from video without uploading</strong> a single byte—making it a genuine <strong>zero data storage video editor</strong> built for speed and privacy.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <h3>Lossless Stream Copy</h3>
+            <p>
+              Instead of slow re-encoding, RemoveAudio uses FFmpeg stream copy (<code>-c:v copy -an</code>) to strip audio from video instantaneously. Your muted clip retains 100% of its original resolution, bitrate, and frame rate while shrinking in file size.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <h3>Zero Uploads, Zero Watermarks</h3>
+            <p>
+              As a dedicated <strong>client-side video muter</strong>, your files stay strictly inside your browser tab. There is no sign-up wall, no cloud queue, and no branding stamped onto your footage—just clean silent video.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 20h14" />
+              </svg>
+            </div>
+            <h3>Works Offline Anytime</h3>
+            <p>
+              Install RemoveAudio as a Progressive Web App via <em>Add to Home Screen</em> to cache the local engine. Once saved, you have a fast <strong>offline mute video tool</strong> ready whenever you need to remove sound from video without Wi-Fi.
+            </p>
+          </div>
+        </div>
+
+        <div class="helpful-links">
+          <a href="/how-to-use/" class="text-link">Read the step-by-step guide &rarr;</a>
+          <a href="/privacy/" class="text-link">Verify our zero-upload architecture &rarr;</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="seo-section" aria-labelledby="faq-heading">
+      <div class="faq-header">
+        <h2 id="faq-heading" class="section-title">Frequently Asked Questions</h2>
+        <p class="section-lead">
+          Quick answers about how RemoveAudio strips sound privately in your browser.
+        </p>
+      </div>
+
+      <div class="faq-list">
+        {faqs.map((faq) => (
+          <article class="faq-card">
+            <h3 class="faq-question">{faq.question}</h3>
+            <p class="faq-answer">{faq.answer}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .below-fold {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 76px;
+    display: grid;
+    gap: 52px;
+  }
+
+  .seo-section {
+    width: 100%;
+  }
+
+  .overview-card {
+    background-color: var(--surface-card);
+    border: 1.5px solid var(--accent-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(24px, 4vw, 40px);
+    box-shadow: var(--shadow-card);
+  }
+
+  .section-intro {
+    margin-bottom: 26px;
+  }
+
+  .section-title {
+    font-size: clamp(1.45rem, 3vw, 1.95rem);
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 12px;
+  }
+
+  .section-lead {
+    font-size: 1.0125rem;
+    color: var(--text-body);
+    line-height: 1.68;
+  }
+
+  .section-lead strong {
+    color: var(--text-heading);
+    font-weight: 700;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .feature-item {
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+    border-radius: 18px;
+    padding: 20px;
+  }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--cta-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  :global(:root[data-theme='dark']) .feature-icon {
+    color: var(--accent-border);
+  }
+
+  .feature-item h3 {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .feature-item p {
+    font-size: 0.925rem;
+    color: var(--text-body);
+    line-height: 1.6;
+  }
+
+  .feature-item code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background-color: var(--accent-soft);
+    color: var(--text-heading);
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  .helpful-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding-top: 8px;
+  }
+
+  .text-link {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: var(--cta-bg);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.18s ease;
+  }
+
+  :global(:root[data-theme='dark']) .text-link {
+    color: var(--accent-border);
+  }
+
+  .text-link:hover {
+    opacity: 0.8;
+  }
+
+  .faq-header {
+    margin-bottom: 20px;
+  }
+
+  .faq-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .faq-card {
+    background-color: var(--surface-card);
+    border: 1.5px solid var(--accent-border);
+    border-radius: 18px;
+    padding: clamp(18px, 2.5vw, 24px);
+    transition: border-color 0.2s ease, transform 0.2s var(--ease-out);
+  }
+
+  .faq-card:hover {
+    border-color: var(--accent-border-strong);
+  }
+
+  .faq-question {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 8px;
+    line-height: 1.35;
+  }
+
+  .faq-answer {
+    font-size: 0.95rem;
+    color: var(--text-body);
+    line-height: 1.65;
+  }
+</style>

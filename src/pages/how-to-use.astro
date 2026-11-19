@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const pageTitle = 'How to Remove Audio from Video Online Free | RemoveAudio';
+const pageDescription =
+  'Learn how to mute MP4, MOV, and WebM videos without uploading. Strip background noise or music losslessly and use RemoveAudio offline anytime.';
+
+const steps = [
+  {
+    name: 'Select or drop your video locally',
+    text: 'Open RemoveAudio and drop one or more MP4, MOV, WebM, MKV, or AVI files into the dropzone—or click "Select Video" to browse your device. Your footage stays inside your browser tab without uploading.',
+  },
+  {
+    name: 'Click "Remove Audio" for lossless stripping',
+    text: 'Press the Remove Audio button to strip background noise, wind, voice, or background music from your video. RemoveAudio runs FFmpeg WebAssembly with lossless stream copy (-c:v copy -an), keeping 100% original video quality with zero re-encoding.',
+  },
+  {
+    name: 'Preview and download your muted video',
+    text: 'Check the inline muted preview player and inspect the exact original-vs-muted file size comparison. Click "Download Muted Video" to save your clean, watermark-free file immediately.',
+  },
+];
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'How to Remove Audio from Video Online Without Uploading',
+  description: pageDescription,
+  totalTime: 'PT1M',
+  tool: [
+    {
+      '@type': 'HowToTool',
+      name: 'RemoveAudio WebAssembly Browser Video Audio Remover',
+    },
+  ],
+  step: steps.map((step, index) => ({
+    '@type': 'HowToStep',
+    position: index + 1,
+    name: step.name,
+    text: step.text,
+    url: `https://removeaudio.github.io/how-to-use/#step-${index + 1}`,
+  })),
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath="/how-to-use/"
+>
+  <Fragment slot="head">
+    <JsonLd schema={howToSchema} />
+  </Fragment>
+
+  <section class="content-page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/', i18nKey: 'nav.home' },
+        { label: 'How to Use', href: '/how-to-use/', i18nKey: 'nav.howToUse' },
+      ]}
+    />
+
+    <article class="content-card">
+      <h1>How to Remove Audio from Video Online</h1>
+      <p class="content-lead">
+        Follow three quick steps to <strong>mute MP4 online</strong>, clean up MOV or WebM clips, and <strong>remove audio from video without uploading</strong> a single file to the cloud.
+      </p>
+
+      <ol class="guide-steps">
+        {steps.map((step, idx) => (
+          <li id={`step-${idx + 1}`} class="guide-step-card">
+            <span class="step-badge" aria-hidden="true">{idx + 1}</span>
+            <div>
+              <h2>{step.name}</h2>
+              <p>{step.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <section class="sub-block" aria-labelledby="lossless-heading">
+        <h2 id="lossless-heading">Strip Background Noise or Music Losslessly</h2>
+        <p>
+          Whether you want to <strong>remove background noise from video</strong> recorded outdoors, <strong>remove music from video</strong> before sharing on social platforms, or completely <strong>delete audio from video</strong> for a product demo, RemoveAudio avoids destructive re-encoding. It copies the existing video stream byte-for-byte using <code>-c:v copy -an</code>, producing a smaller silent file in moments with zero watermark and no sign-up required.
+        </p>
+      </section>
+
+      <section class="sub-block" aria-labelledby="offline-heading">
+        <h2 id="offline-heading">Use RemoveAudio as an Offline Mute Video Tool</h2>
+        <p>
+          Need to mute recordings on a flight, on set, or on a restricted network? Click <strong>Add to Home Screen</strong> in the top navigation bar. RemoveAudio installs as a Progressive Web App and caches the local FFmpeg WebAssembly engine in your browser—turning it into a reliable <strong>offline mute video tool</strong> that works even with Wi-Fi turned off.
+        </p>
+      </section>
+
+      <div class="page-cta-row">
+        <a href="/" class="btn-primary">Open RemoveAudio Tool</a>
+        <a href="/privacy/" class="btn-secondary">Read Privacy Architecture</a>
+      </div>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .guide-steps {
+    display: grid;
+    gap: 14px;
+    padding: 0;
+    list-style: none;
+    margin: 0 0 30px;
+  }
+
+  .guide-step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+  }
+
+  .step-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background-color: var(--cta-bg);
+    color: var(--cta-text);
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .guide-step-card h2 {
+    font-size: 1.08rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .guide-step-card p {
+    font-size: 0.95rem;
+    color: var(--text-body);
+    line-height: 1.62;
+  }
+
+  .sub-block {
+    padding: 20px 22px;
+    border-radius: 18px;
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+    margin-bottom: 16px;
+  }
+
+  .sub-block h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .sub-block p {
+    font-size: 0.95rem;
+    color: var(--text-body);
+    line-height: 1.65;
+  }
+
+  .sub-block strong {
+    color: var(--text-heading);
+  }
+
+  code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background-color: var(--accent-soft);
+    color: var(--text-heading);
+    font-size: 0.88em;
+    font-weight: 600;
+  }
+
+  .page-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 26px;
+  }
+</style>

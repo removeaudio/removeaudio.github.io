@@ -1,0 +1,386 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const pageTitle = 'Hire Kishara Dilshan — Custom Web & WASM Dev | RemoveAudio';
+const pageDescription =
+  'Hire Kishara Dilshan, creator of RemoveAudio, for ultra-fast Astro web apps, private WebAssembly tools, and high-converting UI/UX design work.';
+
+const contactEmail = 'kisharadilshan007@gmail.com';
+
+const services = [
+  {
+    title: 'Ultra-fast, SEO-optimized web applications',
+    description:
+      'Astro, React, Next.js — engineered for sub-second loads, technical SEO, and clean scalability.',
+    icon: 'bolt',
+  },
+  {
+    title: 'Client-side processing & WebAssembly (WASM) tools',
+    description:
+      'Zero-server media, PDF, and data utilities that run privately inside the browser.',
+    icon: 'cpu',
+  },
+  {
+    title: 'UI/UX design & High-converting landing pages',
+    description:
+      'Minimal, accessible interfaces crafted to convert visitors effortlessly across desktop and mobile.',
+    icon: 'layout',
+  },
+] as const;
+
+const contactPersonSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Hire Kishara Dilshan — Custom IT Solutions',
+  url: 'https://removeaudio.github.io/hire-me/',
+  description: pageDescription,
+  mainEntity: {
+    '@type': 'Person',
+    name: 'Kishara Dilshan',
+    jobTitle: 'Full-Stack Web Developer & WebAssembly Specialist',
+    email: `mailto:${contactEmail}`,
+    url: 'https://removeaudio.github.io/hire-me/',
+    sameAs: [
+      'https://github.com/removeaudio/removeaudio.github.io',
+      'https://kisharadilshan.gumroad.com/coffee',
+    ],
+    knowsAbout: [
+      'Astro',
+      'React',
+      'Next.js',
+      'WebAssembly',
+      'Technical SEO',
+      'UI/UX Design',
+    ],
+  },
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath="/hire-me/"
+>
+  <Fragment slot="head">
+    <JsonLd schema={contactPersonSchema} />
+  </Fragment>
+
+  <section class="content-page hire-page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/', i18nKey: 'nav.home' },
+        { label: 'Hire Me', href: '/hire-me/', i18nKey: 'nav.hireMe' },
+      ]}
+    />
+
+    <article class="content-card hire-card">
+      <!-- Availability Status Badge -->
+      <div class="availability-badge">
+        <span class="availability-dot" aria-hidden="true"></span>
+        <span>Available for Freelance Projects</span>
+      </div>
+
+      <h1 class="hire-heading">Need a Custom IT Solution?</h1>
+
+      <p class="hire-intro">
+        Hi, I'm <strong>Kishara Dilshan</strong>, the developer behind RemoveAudio. If you love this
+        fast, client-side tool and need a world-class IT solution for your own business, I am
+        available for freelance projects. I specialize in:
+      </p>
+
+      <!-- 3 Minimal Service Cards -->
+      <div class="service-grid">
+        {services.map((service) => (
+          <section class="service-card" aria-label={service.title}>
+            <div class="service-icon" aria-hidden="true">
+              {service.icon === 'bolt' && (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              )}
+              {service.icon === 'cpu' && (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                  <rect x="9" y="9" width="6" height="6" />
+                  <path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2" />
+                </svg>
+              )}
+              {service.icon === 'layout' && (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="3" />
+                  <path d="M3 9h18" />
+                  <path d="M9 21V9" />
+                </svg>
+              )}
+            </div>
+            <h2>{service.title}</h2>
+            <p>{service.description}</p>
+          </section>
+        ))}
+      </div>
+
+      <!-- High-Converting Closing CTA -->
+      <div class="hire-cta-box">
+        <p class="hire-closing">Let's build something amazing together.</p>
+
+        <div class="hire-actions">
+          <a
+            href={`mailto:${contactEmail}`}
+            class="btn-primary hire-email-btn"
+            aria-label={`Email Kishara Dilshan directly at ${contactEmail}`}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2.5" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+            <span>Email me directly: {contactEmail}</span>
+          </a>
+
+          <button
+            type="button"
+            id="copy-email-btn"
+            class="btn-secondary hire-copy-btn"
+            data-email={contactEmail}
+            data-copied="false"
+            aria-label={`Copy email address ${contactEmail} to clipboard`}
+          >
+            <svg class="icon-copy" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <svg class="icon-check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span id="copy-email-label">Copy Email</span>
+          </button>
+        </div>
+
+        <span id="copy-email-status" class="sr-only" role="status" aria-live="polite"></span>
+      </div>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .hire-page {
+    max-width: 860px;
+  }
+
+  .hire-card {
+    padding: clamp(26px, 4.4vw, 44px);
+  }
+
+  .availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+    font-size: 0.84rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+
+  .availability-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--success-border);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success-border) 30%, transparent);
+    animation: pulseLive 2.2s ease-in-out infinite;
+  }
+
+  @keyframes pulseLive {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.22);
+      opacity: 0.72;
+    }
+  }
+
+  .hire-heading {
+    font-size: clamp(1.85rem, 4vw, 2.65rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+
+  .hire-intro {
+    font-size: 1.0625rem;
+    line-height: 1.68;
+    color: var(--text-body);
+    margin-bottom: 28px;
+    max-width: 68ch;
+  }
+
+  .hire-intro strong {
+    color: var(--text-heading);
+    font-weight: 800;
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+
+  .service-card {
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+    border-radius: 20px;
+    padding: 22px;
+    transition: transform 0.22s var(--ease-out), border-color 0.2s ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-border-strong);
+  }
+
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--cta-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  :global(:root[data-theme='dark']) .service-icon {
+    color: var(--accent-border);
+  }
+
+  .service-card h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .service-card p {
+    font-size: 0.925rem;
+    color: var(--text-body);
+    line-height: 1.6;
+  }
+
+  .hire-cta-box {
+    padding: clamp(20px, 3vw, 28px);
+    border-radius: 20px;
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+  }
+
+  .hire-closing {
+    font-size: 1.18rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 16px;
+  }
+
+  .hire-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hire-email-btn {
+    min-height: 54px;
+    padding: 0 24px;
+    word-break: break-word;
+  }
+
+  .hire-copy-btn {
+    min-height: 54px;
+    padding: 0 22px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.18s var(--ease-out);
+  }
+
+  .hire-copy-btn .icon-check {
+    display: none;
+  }
+
+  .hire-copy-btn[data-copied='true'] {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+  }
+
+  .hire-copy-btn[data-copied='true'] .icon-copy {
+    display: none;
+  }
+
+  .hire-copy-btn[data-copied='true'] .icon-check {
+    display: block;
+  }
+
+  @media (max-width: 540px) {
+    .hire-email-btn,
+    .hire-copy-btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const copyBtn = document.getElementById('copy-email-btn') as HTMLButtonElement | null;
+  const copyLabel = document.getElementById('copy-email-label');
+  const copyStatus = document.getElementById('copy-email-status');
+  let resetTimer: number | null = null;
+
+  async function copyText(text: string): Promise<boolean> {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall through to legacy textarea copy
+      }
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try {
+      ok = document.execCommand('copy');
+    } catch {
+      ok = false;
+    }
+    ta.remove();
+    return ok;
+  }
+
+  copyBtn?.addEventListener('click', async () => {
+    const email = copyBtn.dataset.email || 'kisharadilshan007@gmail.com';
+    const copied = await copyText(email);
+    if (!copied) return;
+
+    copyBtn.dataset.copied = 'true';
+    if (copyLabel) copyLabel.textContent = 'Copied!';
+    if (copyStatus) copyStatus.textContent = `Copied ${email} to clipboard.`;
+
+    if (resetTimer) window.clearTimeout(resetTimer);
+    resetTimer = window.setTimeout(() => {
+      copyBtn.dataset.copied = 'false';
+      if (copyLabel) copyLabel.textContent = 'Copy Email';
+      if (copyStatus) copyStatus.textContent = '';
+    }, 2400);
+  });
+</script>

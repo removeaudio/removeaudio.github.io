@@ -1,0 +1,27 @@
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# generated FFmpeg wasm copies (synced from node_modules via scripts/sync-ffmpeg.mjs)
+public/ffmpeg/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS / Windows / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

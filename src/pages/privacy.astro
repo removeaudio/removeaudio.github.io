@@ -1,0 +1,122 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const pageTitle = 'Privacy Policy — Zero Upload Video Muter | RemoveAudio';
+const pageDescription =
+  'Discover how RemoveAudio works as a zero data storage video editor using WebAssembly. Your files stay in your browser with zero server uploads.';
+
+const privacySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: pageTitle,
+  url: 'https://removeaudio.github.io/privacy/',
+  description: pageDescription,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'RemoveAudio',
+    url: 'https://removeaudio.github.io/',
+  },
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  canonicalPath="/privacy/"
+>
+  <Fragment slot="head">
+    <JsonLd schema={privacySchema} />
+  </Fragment>
+
+  <section class="content-page">
+    <Breadcrumbs
+      items={[
+        { label: 'Home', href: '/', i18nKey: 'nav.home' },
+        { label: 'Privacy', href: '/privacy/', i18nKey: 'nav.privacy' },
+      ]}
+    />
+
+    <article class="content-card">
+      <h1>Privacy Policy &amp; Zero-Upload Architecture</h1>
+      <p class="content-lead">
+        RemoveAudio was engineered from day one as a <strong>zero data storage video editor</strong>. When you <strong>remove audio from video</strong> here, your media stays strictly on your own device from start to finish.
+      </p>
+
+      <div class="privacy-grid">
+        <section class="privacy-block" aria-labelledby="wasm-heading">
+          <h2 id="wasm-heading">100% Client-Side WebAssembly Processing</h2>
+          <p>
+            Unlike cloud converters that send your footage over the internet, RemoveAudio runs <code>FFmpeg.wasm</code> inside an isolated Web Worker right inside your browser tab. As a true <strong>client-side video muter</strong> and <strong>private video muter</strong>, input files are read directly into temporary browser memory, stripped of audio, exported as a local Blob URL, and discarded immediately once you clear or close the tab.
+          </p>
+        </section>
+
+        <section class="privacy-block" aria-labelledby="storage-heading">
+          <h2 id="storage-heading">Zero Server Uploads &amp; Zero File Storage</h2>
+          <p>
+            RemoveAudio is hosted as a purely static website on GitHub Pages. There is no upload endpoint, no cloud bucket, no transcoding server, and no user account database. You can <strong>mute video no sign up</strong> and verify our zero-upload guarantee anytime by opening your browser’s Network inspector—or by disconnecting from the internet after installing RemoveAudio via Add to Home Screen.
+          </p>
+        </section>
+
+        <section class="privacy-block" aria-labelledby="prefs-heading">
+          <h2 id="prefs-heading">Local Preferences &amp; Aggregate Analytics</h2>
+          <p>
+            To keep your experience consistent, RemoveAudio stores only two lightweight preferences in your browser’s <code>localStorage</code>: your selected theme (<code>light</code> or <code>dark</code>) and your interface language. We also use Google Tag Manager and Google Analytics 4 solely to measure aggregate page traffic and improve performance; analytics scripts never read, inspect, or receive your video files or filenames.
+          </p>
+        </section>
+      </div>
+
+      <div class="page-cta-row">
+        <a href="/" class="btn-primary">Start Muting Videos Privately</a>
+        <a href="/hire-me/" class="btn-secondary">Contact the Developer</a>
+      </div>
+    </article>
+  </section>
+</Layout>
+
+<style>
+  .privacy-grid {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+
+  .privacy-block {
+    padding: 20px 22px;
+    border-radius: 18px;
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+  }
+
+  .privacy-block h2 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .privacy-block p {
+    font-size: 0.95rem;
+    color: var(--text-body);
+    line-height: 1.65;
+  }
+
+  .privacy-block strong {
+    color: var(--text-heading);
+  }
+
+  code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background-color: var(--accent-soft);
+    color: var(--text-heading);
+    font-size: 0.88em;
+    font-weight: 600;
+  }
+
+  .page-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

@@ -1,0 +1,205 @@
+---
+import { TRANSLATIONS } from '../i18n/translations';
+
+const t = TRANSLATIONS.en;
+const year = new Date().getFullYear();
+
+const techStack = [
+  'Astro',
+  'WebAssembly (FFmpeg.wasm)',
+  'TypeScript',
+  'PWA',
+  'Google Antigravity',
+  'Google Gemini',
+];
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-col">
+      <a href="/" class="footer-brand">
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 64 64"
+          fill="none"
+          aria-hidden="true"
+        >
+          <rect width="64" height="64" rx="16" fill="#9E476A" />
+          <path
+            d="M15 26.5C15 25.1193 16.1193 24 17.5 24H23.6L32.85 16.55C34.16 15.49 36 16.43 36 18.12V45.88C36 47.57 34.16 48.51 32.85 47.45L23.6 40H17.5C16.1193 40 15 38.8807 15 37.5V26.5Z"
+            fill="#FFFFFF"
+          />
+          <path
+            d="M43 26L53 38M53 26L43 38"
+            stroke="#FDCEDF"
+            stroke-width="4.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span>RemoveAudio</span>
+      </a>
+      <p class="footer-tagline">
+        100% client-side video muter built with WebAssembly. Zero uploads, zero storage, zero watermarks.
+      </p>
+    </div>
+
+    <nav class="footer-links" aria-label="Footer Navigation">
+      <a href="/" data-i18n="nav.home">{t['nav.home']}</a>
+      <a href="/how-to-use/" data-i18n="nav.howToUse">{t['nav.howToUse']}</a>
+      <a href="/privacy/" data-i18n="nav.privacy">{t['nav.privacy']}</a>
+      <a href="/hire-me/" data-i18n="nav.hireMe">{t['nav.hireMe']}</a>
+      <a
+        href="https://kisharadilshan.gumroad.com/coffee"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-i18n="nav.support"
+      >
+        {t['nav.support']}
+      </a>
+      <a
+        href="https://github.com/removeaudio/removeaudio.github.io"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </nav>
+  </div>
+
+  <!-- Minimal Tech Stack & Tools Strip -->
+  <div class="footer-stack" aria-label="Tech stack and tools used">
+    <span class="footer-stack-label">Built with</span>
+    <ul class="footer-stack-list">
+      {techStack.map((item) => (
+        <li class="stack-chip">{item}</li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {year} RemoveAudio · Built by <a href="/hire-me/" class="footer-author">Kishara Dilshan</a></p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    border-top: 1px solid color-mix(in srgb, var(--accent-border) 65%, transparent);
+    background-color: color-mix(in srgb, var(--surface-card) 55%, var(--bg-primary));
+    padding: 36px 20px 28px;
+  }
+
+  .footer-inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-border) 45%, transparent);
+  }
+
+  .footer-brand-col {
+    max-width: 360px;
+  }
+
+  .footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--text-heading);
+    margin-bottom: 8px;
+  }
+
+  .footer-tagline {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-body);
+  }
+
+  .footer-links a {
+    padding: 4px 0;
+    transition: color 0.18s ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--cta-bg);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  :global(:root[data-theme='dark']) .footer-links a:hover {
+    color: var(--accent-border);
+  }
+
+  /* Tech Stack & Tools Pill Strip */
+  .footer-stack {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 18px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent-border) 45%, transparent);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+
+  .footer-stack-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .footer-stack-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .stack-chip {
+    padding: 4px 11px;
+    border-radius: var(--radius-pill);
+    background-color: var(--surface-elevated);
+    border: 1px solid color-mix(in srgb, var(--accent-border) 80%, transparent);
+    color: var(--text-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .footer-bottom {
+    max-width: var(--container-max);
+    margin: 18px auto 0;
+    font-size: 0.825rem;
+    color: var(--text-muted);
+  }
+
+  .footer-author {
+    color: var(--text-heading);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

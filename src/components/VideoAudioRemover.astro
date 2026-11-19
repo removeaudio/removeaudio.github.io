@@ -1,0 +1,1556 @@
+---
+import { TRANSLATIONS } from '../i18n/translations';
+
+const t = TRANSLATIONS.en;
+---
+
+<section
+  class="tool-card"
+  id="video-audio-remover"
+  aria-label="Client-side Video Audio Remover"
+  data-state="idle"
+>
+  <!-- Top Bar: Privacy Badge + Offline Ready / Step Indicator -->
+  <div class="tool-top-bar">
+    <div class="privacy-pill">
+      <svg class="privacy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+      <span data-i18n="tool.privacyBadge">{t['tool.privacyBadge']}</span>
+    </div>
+
+    <div class="offline-pill" id="tool-offline-pill" hidden>
+      <span class="offline-dot" aria-hidden="true"></span>
+      <span data-i18n="tool.offlineReady">{t['tool.offlineReady']}</span>
+    </div>
+  </div>
+
+  <!-- Inline Error Alert -->
+  <div class="tool-alert" id="tool-alert" role="alert" hidden>
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" x2="12" y1="8" y2="12" />
+      <line x1="12" x2="12.01" y1="16" y2="16" />
+    </svg>
+    <span id="tool-alert-text"></span>
+    <button type="button" class="tool-alert-close" id="tool-alert-close" aria-label="Dismiss alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Hidden Native File Input (supports single or multi-file batch) -->
+  <input
+    type="file"
+    id="video-file-input"
+    class="sr-only"
+    aria-label="Select video files to remove audio"
+    accept=".mp4,.mov,.webm,.mkv,.avi,video/mp4,video/quicktime,video/webm,video/x-matroska,video/x-msvideo"
+    multiple
+  />
+
+  <!-- STATE 1: IDLE / DRAG-AND-DROP ZONE -->
+  <div
+    class="dropzone"
+    id="tool-dropzone"
+    role="button"
+    tabindex="0"
+    aria-label="Drop video here or click to select"
+    data-i18n-aria="tool.dropTitle"
+    aria-describedby="dropzone-subtitle"
+    data-dragging="false"
+  >
+    <div class="dropzone-visual" aria-hidden="true">
+      <span class="ripple ripple-1"></span>
+      <span class="ripple ripple-2"></span>
+      <div class="dropzone-icon-circle">
+        <svg class="dropzone-svg" width="48" height="48" viewBox="0 0 64 64" fill="none">
+          <path
+            class="svg-speaker"
+            d="M14 25.5C14 24.12 15.12 23 16.5 23H23.2L32.7 15.3C34.05 14.2 36 15.17 36 16.92V47.08C36 48.83 34.05 49.8 32.7 48.7L23.2 41H16.5C15.12 41 14 39.88 14 38.5V25.5Z"
+            fill="currentColor"
+          />
+          <path
+            class="svg-wave svg-wave-1"
+            d="M42.5 25.5C45 28.2 45 35.8 42.5 38.5"
+            stroke="currentColor"
+            stroke-width="3.5"
+            stroke-linecap="round"
+          />
+          <path
+            class="svg-wave svg-wave-2"
+            d="M48.5 20.5C53 25.6 53 38.4 48.5 43.5"
+            stroke="currentColor"
+            stroke-width="3.5"
+            stroke-linecap="round"
+          />
+          <path
+            class="svg-slash"
+            d="M12 12L52 52"
+            stroke="var(--cta-bg)"
+            stroke-width="4.5"
+            stroke-linecap="round"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="dropzone-title" data-i18n="tool.dropTitle">{t['tool.dropTitle']}</h2>
+    <p class="dropzone-subtitle" id="dropzone-subtitle" data-i18n="tool.dropSubtitle">
+      {t['tool.dropSubtitle']}
+    </p>
+
+    <div class="dropzone-cta-row">
+      <span class="btn-primary dropzone-select-pill">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" x2="12" y1="3" y2="15" />
+        </svg>
+        <span data-i18n="tool.selectBtn">{t['tool.selectBtn']}</span>
+      </span>
+    </div>
+
+    <div class="step-hints" aria-hidden="true">
+      <span class="step-chip" data-i18n="tool.step1">{t['tool.step1']}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+      </svg>
+      <span class="step-chip" data-i18n="tool.step2">{t['tool.step2']}</span>
+    </div>
+  </div>
+
+  <!-- STATE 2: QUEUED / READY TO STRIP AUDIO -->
+  <div class="stage-panel" id="stage-queued" hidden>
+    <div class="queue-list" id="queued-file-list" aria-live="polite"></div>
+
+    <p class="lossless-hint">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      </svg>
+      <span data-i18n="tool.losslessNote">{t['tool.losslessNote']}</span>
+    </p>
+
+    <div class="action-bar">
+      <button type="button" class="btn-primary action-main-btn" id="btn-remove-audio">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <line x1="22" x2="16" y1="9" y2="15" />
+          <line x1="16" x2="22" y1="9" y2="15" />
+        </svg>
+        <span id="btn-remove-audio-text" data-i18n="tool.removeAudio">{t['tool.removeAudio']}</span>
+      </button>
+
+      <div class="action-secondary-group">
+        <button type="button" class="btn-secondary" id="btn-add-more">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" x2="12" y1="5" y2="19" />
+            <line x1="5" x2="19" y1="12" y2="12" />
+          </svg>
+          <span data-i18n="tool.addMore">{t['tool.addMore']}</span>
+        </button>
+
+        <button type="button" class="btn-secondary" id="btn-clear-queue">
+          <span data-i18n="tool.clearAll">{t['tool.clearAll']}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATE 3: PROCESSING / ANIMATED AUDIO-STRIPPING WAVEFORM -->
+  <div class="stage-panel stage-processing" id="stage-processing" hidden aria-live="polite">
+    <div class="waveform-stage" aria-hidden="true">
+      <div class="waveform-bars">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+      <div class="waveform-mute-line"></div>
+    </div>
+
+    <h3 class="processing-title" id="processing-status-text" data-i18n="tool.processing">
+      {t['tool.processing']}
+    </h3>
+    <p class="processing-file" id="processing-file-name"></p>
+
+    <div class="progress-wrap" role="progressbar" aria-label="Audio removal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar-aria">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width: 8%;"></div>
+      </div>
+      <span class="progress-percent" id="progress-percent">8%</span>
+    </div>
+  </div>
+
+  <!-- STATE 4: DONE / MUTED-READY CHECKMARK, INLINE PREVIEW & SIZE COMPARISON -->
+  <div class="stage-panel stage-done" id="stage-done" hidden>
+    <div class="done-header">
+      <div class="checkmark-badge" aria-hidden="true">
+        <svg class="checkmark-svg" width="34" height="34" viewBox="0 0 52 52" fill="none">
+          <circle class="checkmark-circle" cx="26" cy="26" r="23" stroke="currentColor" stroke-width="3" />
+          <path class="checkmark-path" d="M15.5 26.5L23 34L37 19" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="done-header-copy">
+        <h3 class="done-title" data-i18n="tool.readyTitle">{t['tool.readyTitle']}</h3>
+        <p class="done-subtitle" id="done-subtitle" data-i18n="tool.readySubtitle">
+          {t['tool.readySubtitle']}
+        </p>
+      </div>
+    </div>
+
+    <!-- Exact Original vs Muted Size Comparison -->
+    <div class="size-compare-bar" id="size-compare-bar">
+      <div class="size-stat">
+        <span class="size-label" data-i18n="tool.originalSize">{t['tool.originalSize']}</span>
+        <strong class="size-value" id="size-original">0 MB</strong>
+      </div>
+      <svg class="size-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+      </svg>
+      <div class="size-stat">
+        <span class="size-label" data-i18n="tool.mutedSize">{t['tool.mutedSize']}</span>
+        <strong class="size-value" id="size-muted">0 MB</strong>
+      </div>
+      <span class="size-delta-pill" id="size-delta-pill">-0%</span>
+    </div>
+
+    <!-- Inline Muted Video Preview Player -->
+    <div class="preview-shell" id="preview-shell">
+      <div class="preview-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <line x1="22" x2="16" y1="9" y2="15" />
+          <line x1="16" x2="22" y1="9" y2="15" />
+        </svg>
+        <span data-i18n="tool.previewMutedBadge">{t['tool.previewMutedBadge']}</span>
+      </div>
+      <video
+        id="muted-preview-video"
+        class="preview-video"
+        controls
+        muted
+        playsinline
+        preload="metadata"
+      ></video>
+    </div>
+
+    <!-- Multi-file Completed Queue List (only displayed when 2+ files) -->
+    <div class="queue-list done-queue-list" id="done-file-list" hidden></div>
+
+    <!-- Download & Reset Action Bar -->
+    <div class="action-bar">
+      <button type="button" class="btn-primary action-main-btn" id="btn-download-primary">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" x2="12" y1="15" y2="3" />
+        </svg>
+        <span id="btn-download-primary-text" data-i18n="tool.download">{t['tool.download']}</span>
+      </button>
+
+      <button type="button" class="btn-secondary" id="btn-mute-another">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+        <span data-i18n="tool.muteAnother">{t['tool.muteAnother']}</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tool-card {
+    width: 100%;
+    max-width: 720px;
+    background-color: var(--surface-card);
+    border: 1.5px solid var(--accent-border);
+    border-radius: 28px;
+    padding: clamp(16px, 2.6vw, 26px);
+    box-shadow: var(--shadow-card);
+    transition: background-color 0.25s var(--ease-out), border-color 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  }
+
+  /* Top Privacy & Status Bar */
+  .tool-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .privacy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 13px;
+    border-radius: var(--radius-pill);
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--text-heading);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+
+  .privacy-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--cta-bg);
+    flex-shrink: 0;
+  }
+
+  :global(:root[data-theme='dark']) .privacy-icon {
+    color: var(--accent-border);
+  }
+
+  .offline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: var(--radius-pill);
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .offline-pill[hidden] {
+    display: none;
+  }
+
+  .offline-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--success-border);
+  }
+
+  /* Inline Alert */
+  .tool-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    margin-bottom: 14px;
+    border-radius: 14px;
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    color: var(--danger-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .tool-alert[hidden] {
+    display: none;
+  }
+
+  .tool-alert > svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+  }
+
+  .tool-alert > span {
+    flex: 1;
+  }
+
+  .tool-alert-close {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    flex-shrink: 0;
+  }
+
+  .tool-alert-close:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .tool-alert-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* STATE 1: DROPZONE */
+  .dropzone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(24px, 4.2vh, 42px) 20px clamp(20px, 3.2vh, 30px);
+    border-radius: 22px;
+    background-color: var(--surface-elevated);
+    border: 2px dashed var(--accent-border-strong);
+    cursor: pointer;
+    transition: transform 0.25s var(--ease-out), border-color 0.22s ease, background-color 0.22s ease, box-shadow 0.25s var(--ease-out);
+  }
+
+  .dropzone[hidden] {
+    display: none;
+  }
+
+  .dropzone:hover,
+  .dropzone[data-dragging='true'] {
+    border-color: var(--cta-bg);
+    background-color: color-mix(in srgb, var(--surface-elevated) 72%, var(--accent-soft));
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -12px rgba(158, 71, 106, 0.28);
+  }
+
+  .dropzone[data-dragging='true'] {
+    transform: scale(1.012);
+    border-style: solid;
+  }
+
+  /* Expressive Animated Visual Badge */
+  .dropzone-visual {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dropzone-icon-circle {
+    position: relative;
+    z-index: 2;
+    width: 78px;
+    height: 78px;
+    border-radius: 24px;
+    background-color: var(--accent-soft);
+    border: 1.5px solid var(--accent-border);
+    color: var(--text-heading);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s var(--ease-out), background-color 0.25s ease;
+  }
+
+  .dropzone:hover .dropzone-icon-circle,
+  .dropzone[data-dragging='true'] .dropzone-icon-circle {
+    transform: translateY(-3px) scale(1.04);
+  }
+
+  .dropzone-svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .svg-wave {
+    opacity: 0.9;
+    transition: opacity 0.28s ease, transform 0.28s var(--ease-out);
+    transform-origin: center;
+  }
+
+  .svg-slash {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.35s var(--ease-out), transform 0.28s var(--ease-out);
+  }
+
+  .dropzone:hover .svg-wave,
+  .dropzone[data-dragging='true'] .svg-wave {
+    opacity: 0.22;
+    transform: translateX(3px);
+  }
+
+  .ripple {
+    position: absolute;
+    inset: 2px;
+    border-radius: 26px;
+    border: 2px solid var(--accent-border);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dropzone:hover .ripple-1,
+  .dropzone[data-dragging='true'] .ripple-1 {
+    animation: dropRipple 1.6s var(--ease-out) infinite;
+  }
+
+  .dropzone[data-dragging='true'] .ripple-2 {
+    animation: dropRipple 1.6s var(--ease-out) 0.55s infinite;
+  }
+
+  @keyframes dropRipple {
+    0% {
+      transform: scale(0.96);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1.36);
+      opacity: 0;
+    }
+  }
+
+  .dropzone-title {
+    font-size: clamp(1.125rem, 2.3vw, 1.375rem);
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 6px;
+  }
+
+  .dropzone-subtitle {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .dropzone-cta-row {
+    margin-bottom: 16px;
+  }
+
+  .dropzone-select-pill {
+    pointer-events: none;
+  }
+
+  .step-hints {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .step-chip {
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background-color: var(--surface-card);
+    border: 1px solid color-mix(in srgb, var(--accent-border) 65%, transparent);
+    color: var(--text-body);
+  }
+
+  /* STAGE PANELS */
+  .stage-panel {
+    background-color: var(--surface-elevated);
+    border: 1.5px solid var(--accent-border);
+    border-radius: 22px;
+    padding: clamp(16px, 2.6vw, 24px);
+    animation: panelFadeIn 0.26s var(--ease-out);
+  }
+
+  .stage-panel[hidden] {
+    display: none;
+  }
+
+  @keyframes panelFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Queue List (Single & Multi-file) */
+  .queue-list {
+    display: grid;
+    gap: 8px;
+    max-height: 210px;
+    overflow-y: auto;
+    margin-bottom: 14px;
+    padding-right: 2px;
+  }
+
+  .done-queue-list {
+    margin-top: 14px;
+    margin-bottom: 16px;
+    max-height: 168px;
+  }
+
+  .done-queue-list[hidden] {
+    display: none;
+  }
+
+  :global(.queue-item) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 13px;
+    border-radius: 14px;
+    background-color: var(--surface-card);
+    border: 1.5px solid color-mix(in srgb, var(--accent-border) 75%, transparent);
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+
+  :global(.queue-item.is-selectable) {
+    cursor: pointer;
+  }
+
+  :global(.queue-item.is-selected) {
+    border-color: var(--cta-bg);
+    background-color: var(--accent-soft);
+  }
+
+  :global(.queue-file-badge) {
+    min-width: 44px;
+    height: 38px;
+    padding: 0 8px;
+    border-radius: 10px;
+    background-color: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--text-heading);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  :global(.queue-file-meta) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  :global(.queue-file-name) {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: var(--text-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :global(.queue-file-sub) {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  :global(.queue-status) {
+    padding: 3px 9px;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    background-color: var(--surface-elevated);
+    border: 1px solid var(--accent-border);
+    color: var(--text-heading);
+    flex-shrink: 0;
+  }
+
+  :global(.queue-status.done) {
+    background-color: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+  }
+
+  :global(.queue-status.error) {
+    background-color: var(--danger-bg);
+    border-color: var(--danger-border);
+    color: var(--danger-text);
+  }
+
+  :global(.queue-icon-btn) {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-body);
+    background-color: var(--surface-elevated);
+    border: 1px solid color-mix(in srgb, var(--accent-border) 70%, transparent);
+    flex-shrink: 0;
+    transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+  }
+
+  :global(.queue-icon-btn:hover) {
+    background-color: var(--cta-bg);
+    border-color: var(--cta-bg);
+    color: var(--cta-text);
+    transform: translateY(-1px);
+  }
+
+  .lossless-hint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .lossless-hint svg {
+    color: var(--cta-bg);
+    flex-shrink: 0;
+  }
+
+  :global(:root[data-theme='dark']) .lossless-hint svg {
+    color: var(--accent-border);
+  }
+
+  /* Action Bar */
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .action-main-btn {
+    flex: 1 1 240px;
+    min-height: 54px;
+  }
+
+  .action-secondary-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* STATE 3: PROCESSING WAVEFORM ANIMATION */
+  .stage-processing {
+    text-align: center;
+    padding: clamp(28px, 5vh, 46px) 20px;
+  }
+
+  .waveform-stage {
+    position: relative;
+    width: 170px;
+    height: 68px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .waveform-bars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 56px;
+  }
+
+  .waveform-bars .bar {
+    width: 7px;
+    height: 16px;
+    border-radius: 99px;
+    background-color: var(--cta-bg);
+    animation: stripWave 1.35s var(--ease-out) infinite;
+  }
+
+  .waveform-bars .bar:nth-child(1) { animation-delay: 0.00s; }
+  .waveform-bars .bar:nth-child(2) { animation-delay: 0.09s; }
+  .waveform-bars .bar:nth-child(3) { animation-delay: 0.18s; }
+  .waveform-bars .bar:nth-child(4) { animation-delay: 0.27s; }
+  .waveform-bars .bar:nth-child(5) { animation-delay: 0.36s; }
+  .waveform-bars .bar:nth-child(6) { animation-delay: 0.45s; }
+  .waveform-bars .bar:nth-child(7) { animation-delay: 0.54s; }
+  .waveform-bars .bar:nth-child(8) { animation-delay: 0.63s; }
+  .waveform-bars .bar:nth-child(9) { animation-delay: 0.72s; }
+
+  @keyframes stripWave {
+    0% {
+      height: 48px;
+      opacity: 1;
+    }
+    50% {
+      height: 10px;
+      opacity: 0.45;
+    }
+    75% {
+      height: 6px;
+      opacity: 0.28;
+    }
+    100% {
+      height: 48px;
+      opacity: 1;
+    }
+  }
+
+  .waveform-mute-line {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    height: 2.5px;
+    border-radius: 99px;
+    background-color: var(--accent-border-strong);
+    opacity: 0.7;
+  }
+
+  .processing-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .processing-file {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 12px;
+    border-radius: var(--radius-pill);
+    background-color: var(--accent-soft);
+    overflow: hidden;
+    border: 1px solid var(--accent-border);
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--cta-bg), var(--accent-border-strong), var(--cta-bg));
+    background-size: 200% 100%;
+    transition: width 0.22s var(--ease-out);
+    animation: progressShimmer 1.4s linear infinite;
+  }
+
+  @keyframes progressShimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .progress-percent {
+    min-width: 44px;
+    text-align: right;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* STATE 4: DONE / CHECKMARK & INLINE PREVIEW */
+  .done-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .checkmark-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .checkmark-svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .checkmark-circle {
+    stroke-dasharray: 150;
+    stroke-dashoffset: 150;
+    animation: drawStroke 0.45s var(--ease-out) forwards;
+  }
+
+  .checkmark-path {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: drawStroke 0.35s var(--ease-out) 0.28s forwards;
+  }
+
+  @keyframes drawStroke {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .done-title {
+    font-size: 1.18rem;
+    font-weight: 800;
+    margin-bottom: 2px;
+  }
+
+  .done-subtitle {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+
+  /* Original vs Muted File Size Comparison */
+  .size-compare-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 11px 16px;
+    border-radius: 16px;
+    background-color: var(--surface-card);
+    border: 1.5px solid var(--accent-border);
+    margin-bottom: 14px;
+  }
+
+  .size-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+  }
+
+  .size-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .size-value {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .size-arrow {
+    color: var(--cta-bg);
+    flex-shrink: 0;
+  }
+
+  :global(:root[data-theme='dark']) .size-arrow {
+    color: var(--accent-border);
+  }
+
+  .size-delta-pill {
+    padding: 4px 11px;
+    border-radius: var(--radius-pill);
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+    font-size: 0.8rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Inline Muted Video Preview */
+  .preview-shell {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: #140F12;
+    border: 1.5px solid var(--accent-border);
+    margin-bottom: 16px;
+  }
+
+  .preview-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    background-color: rgba(25, 19, 22, 0.78);
+    backdrop-filter: blur(8px);
+    color: #F9F5F6;
+    font-size: 0.74rem;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .preview-video {
+    display: block;
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    background-color: #140F12;
+  }
+
+  @media (max-width: 600px) {
+    .tool-card {
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .dropzone {
+      padding: 22px 14px 18px;
+      border-radius: 18px;
+    }
+
+    .dropzone-visual {
+      width: 72px;
+      height: 72px;
+      margin-bottom: 12px;
+    }
+
+    .dropzone-icon-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 20px;
+    }
+
+    .dropzone-svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .size-compare-bar {
+      padding: 10px 12px;
+    }
+
+    .preview-video {
+      max-height: 210px;
+    }
+  }
+</style>
+
+<script>
+  import {
+    formatBytes,
+    getFileExtension,
+    isSupportedVideoFile,
+    removeAudioFromVideo,
+    type MuteResult,
+  } from '../lib/ffmpegEngine';
+  import { TRANSLATIONS, type TranslationDict } from '../i18n/translations';
+
+  interface QueueItem {
+    id: string;
+    file: File;
+    ext: string;
+    status: 'queued' | 'processing' | 'done' | 'error';
+    result?: MuteResult;
+    errorMessage?: string;
+  }
+
+  const rootEl = document.getElementById('video-audio-remover');
+  const fileInput = document.getElementById('video-file-input') as HTMLInputElement | null;
+  const dropzone = document.getElementById('tool-dropzone');
+  const stageQueued = document.getElementById('stage-queued');
+  const stageProcessing = document.getElementById('stage-processing');
+  const stageDone = document.getElementById('stage-done');
+  const offlinePill = document.getElementById('tool-offline-pill');
+
+  const alertBox = document.getElementById('tool-alert');
+  const alertText = document.getElementById('tool-alert-text');
+  const alertClose = document.getElementById('tool-alert-close');
+
+  const queuedFileList = document.getElementById('queued-file-list');
+  const doneFileList = document.getElementById('done-file-list');
+
+  const btnRemoveAudio = document.getElementById('btn-remove-audio') as HTMLButtonElement | null;
+  const btnRemoveAudioText = document.getElementById('btn-remove-audio-text');
+  const btnAddMore = document.getElementById('btn-add-more');
+  const btnClearQueue = document.getElementById('btn-clear-queue');
+
+  const processingStatusText = document.getElementById('processing-status-text');
+  const processingFileName = document.getElementById('processing-file-name');
+  const progressBarAria = document.getElementById('progress-bar-aria');
+  const progressFill = document.getElementById('progress-fill');
+  const progressPercent = document.getElementById('progress-percent');
+
+  const sizeOriginalEl = document.getElementById('size-original');
+  const sizeMutedEl = document.getElementById('size-muted');
+  const sizeDeltaEl = document.getElementById('size-delta-pill');
+  const previewVideo = document.getElementById('muted-preview-video') as HTMLVideoElement | null;
+  const previewShell = document.getElementById('preview-shell');
+  const btnDownloadPrimary = document.getElementById('btn-download-primary');
+  const btnDownloadPrimaryText = document.getElementById('btn-download-primary-text');
+  const btnMuteAnother = document.getElementById('btn-mute-another');
+
+  let queue: QueueItem[] = [];
+  let selectedPreviewId: string | null = null;
+  let isProcessing = false;
+  let currentStage: 'idle' | 'queued' | 'processing' | 'done' = 'idle';
+
+  function getDict(): TranslationDict {
+    return window.__removeAudioI18n?.getDict() || TRANSLATIONS.en;
+  }
+
+  function showAlert(message: string) {
+    if (!alertBox || !alertText) return;
+    alertText.textContent = message;
+    alertBox.hidden = false;
+  }
+
+  function hideAlert() {
+    if (!alertBox) return;
+    alertBox.hidden = true;
+  }
+
+  alertClose?.addEventListener('click', hideAlert);
+
+  function setStage(stage: 'idle' | 'queued' | 'processing' | 'done') {
+    currentStage = stage;
+    if (rootEl) rootEl.dataset.state = stage;
+    if (dropzone) dropzone.hidden = stage !== 'idle';
+    if (stageQueued) stageQueued.hidden = stage !== 'queued';
+    if (stageProcessing) stageProcessing.hidden = stage !== 'processing';
+    if (stageDone) stageDone.hidden = stage !== 'done';
+  }
+
+  function triggerBlobDownload(url: string, filename: string) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function cleanupResults() {
+    for (const item of queue) {
+      if (item.result?.url) {
+        URL.revokeObjectURL(item.result.url);
+      }
+    }
+    if (previewVideo) {
+      previewVideo.pause();
+      previewVideo.removeAttribute('src');
+      previewVideo.load();
+    }
+  }
+
+  function addFiles(files: FileList | File[]) {
+    hideAlert();
+    const list = Array.from(files);
+    if (list.length === 0) return;
+
+    const valid: File[] = [];
+    let rejected = 0;
+
+    for (const file of list) {
+      if (isSupportedVideoFile(file)) {
+        valid.push(file);
+      } else {
+        rejected += 1;
+      }
+    }
+
+    if (rejected > 0) {
+      showAlert(getDict()['tool.errorUnsupported']);
+    }
+
+    if (valid.length === 0) return;
+
+    // If starting fresh from done state, clear prior results
+    if (currentStage === 'done') {
+      cleanupResults();
+      queue = [];
+      selectedPreviewId = null;
+    }
+
+    for (const file of valid) {
+      queue.push({
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        file,
+        ext: getFileExtension(file.name) || 'mp4',
+        status: 'queued',
+      });
+    }
+
+    renderQueuedList();
+    setStage('queued');
+  }
+
+  function removeQueueItem(id: string) {
+    const idx = queue.findIndex((i) => i.id === id);
+    if (idx === -1) return;
+    const [removed] = queue.splice(idx, 1);
+    if (removed?.result?.url) {
+      URL.revokeObjectURL(removed.result.url);
+    }
+    if (queue.length === 0) {
+      setStage('idle');
+      if (fileInput) fileInput.value = '';
+    } else {
+      renderQueuedList();
+    }
+  }
+
+  function renderQueuedList() {
+    if (!queuedFileList) return;
+    const dict = getDict();
+    queuedFileList.innerHTML = '';
+
+    for (const item of queue) {
+      const row = document.createElement('div');
+      row.className = 'queue-item';
+
+      const extBadge = document.createElement('span');
+      extBadge.className = 'queue-file-badge';
+      extBadge.textContent = item.ext.toUpperCase();
+
+      const meta = document.createElement('div');
+      meta.className = 'queue-file-meta';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'queue-file-name';
+      nameEl.textContent = item.file.name;
+      nameEl.title = item.file.name;
+
+      const subEl = document.createElement('div');
+      subEl.className = 'queue-file-sub';
+      subEl.textContent = formatBytes(item.file.size);
+
+      meta.append(nameEl, subEl);
+
+      const statusPill = document.createElement('span');
+      statusPill.className = 'queue-status';
+      statusPill.textContent = dict['tool.statusQueued'];
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'queue-icon-btn';
+      removeBtn.setAttribute('aria-label', `${dict['tool.removeFile']}: ${item.file.name}`);
+      removeBtn.innerHTML =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+      removeBtn.addEventListener('click', () => removeQueueItem(item.id));
+
+      row.append(extBadge, meta, statusPill, removeBtn);
+      queuedFileList.appendChild(row);
+    }
+
+    if (btnRemoveAudioText) {
+      btnRemoveAudioText.textContent =
+        queue.length > 1
+          ? `${dict['tool.removeAudioAll']} (${queue.length})`
+          : dict['tool.removeAudio'];
+    }
+  }
+
+  function updateProgressUI(percent: number, stage: 'loading' | 'processing', fileLabel: string) {
+    const dict = getDict();
+    const clamped = Math.max(4, Math.min(100, Math.round(percent)));
+    if (progressFill) progressFill.style.width = `${clamped}%`;
+    if (progressPercent) progressPercent.textContent = `${clamped}%`;
+    if (progressBarAria) progressBarAria.setAttribute('aria-valuenow', String(clamped));
+    if (processingStatusText) {
+      processingStatusText.textContent =
+        stage === 'loading' ? dict['tool.loadingEngine'] : dict['tool.processing'];
+    }
+    if (processingFileName) {
+      processingFileName.textContent = fileLabel;
+    }
+  }
+
+  function renderPreviewForItem(item: QueueItem) {
+    if (!item.result) return;
+    selectedPreviewId = item.id;
+    const dict = getDict();
+    const { originalSize, mutedSize, url } = item.result;
+
+    if (sizeOriginalEl) sizeOriginalEl.textContent = formatBytes(originalSize);
+    if (sizeMutedEl) sizeMutedEl.textContent = formatBytes(mutedSize);
+
+    if (sizeDeltaEl) {
+      const diff = originalSize - mutedSize;
+      if (originalSize > 0 && diff > 0) {
+        const pct = ((diff / originalSize) * 100).toFixed(1);
+        sizeDeltaEl.textContent = `-${pct}% (${formatBytes(diff)} ${dict['tool.saved']})`;
+      } else {
+        sizeDeltaEl.textContent = '0% · Lossless';
+      }
+    }
+
+    if (previewVideo && previewShell) {
+      previewShell.hidden = false;
+      previewVideo.src = url;
+      previewVideo.muted = true;
+      previewVideo.load();
+    }
+  }
+
+  function renderDoneState() {
+    const dict = getDict();
+    const completed = queue.filter((i) => i.status === 'done' && i.result);
+
+    if (completed.length === 0) {
+      showAlert(dict['tool.errorProcess']);
+      renderQueuedList();
+      setStage('queued');
+      return;
+    }
+
+    const active =
+      completed.find((i) => i.id === selectedPreviewId) || completed[0];
+    renderPreviewForItem(active);
+
+    if (btnDownloadPrimaryText) {
+      btnDownloadPrimaryText.textContent =
+        completed.length > 1
+          ? `${dict['tool.downloadAll']} (${completed.length})`
+          : dict['tool.download'];
+    }
+
+    if (doneFileList) {
+      if (queue.length > 1) {
+        doneFileList.hidden = false;
+        doneFileList.innerHTML = '';
+
+        for (const item of queue) {
+          const row = document.createElement('div');
+          row.className = `queue-item ${item.status === 'done' ? 'is-selectable' : ''} ${
+            item.id === selectedPreviewId ? 'is-selected' : ''
+          }`;
+
+          const extBadge = document.createElement('span');
+          extBadge.className = 'queue-file-badge';
+          extBadge.textContent = item.ext.toUpperCase();
+
+          const meta = document.createElement('div');
+          meta.className = 'queue-file-meta';
+
+          const nameEl = document.createElement('div');
+          nameEl.className = 'queue-file-name';
+          nameEl.textContent = item.result ? item.result.outputName : item.file.name;
+          nameEl.title = nameEl.textContent;
+
+          const subEl = document.createElement('div');
+          subEl.className = 'queue-file-sub';
+          subEl.textContent = item.result
+            ? `${formatBytes(item.result.originalSize)} → ${formatBytes(item.result.mutedSize)}`
+            : formatBytes(item.file.size);
+
+          meta.append(nameEl, subEl);
+
+          const statusPill = document.createElement('span');
+          statusPill.className = `queue-status ${item.status}`;
+          statusPill.textContent =
+            item.status === 'done' ? dict['tool.statusDone'] : dict['tool.statusError'];
+
+          row.append(extBadge, meta, statusPill);
+
+          if (item.status === 'done' && item.result) {
+            const res = item.result;
+            const dlBtn = document.createElement('button');
+            dlBtn.type = 'button';
+            dlBtn.className = 'queue-icon-btn';
+            dlBtn.setAttribute('aria-label', `${dict['tool.download']}: ${res.outputName}`);
+            dlBtn.innerHTML =
+              '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
+            dlBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              triggerBlobDownload(res.url, res.outputName);
+            });
+            row.appendChild(dlBtn);
+
+            row.addEventListener('click', () => {
+              renderPreviewForItem(item);
+              renderDoneState();
+            });
+          }
+
+          doneFileList.appendChild(row);
+        }
+      } else {
+        doneFileList.hidden = true;
+      }
+    }
+
+    setStage('done');
+  }
+
+  async function processQueue() {
+    if (isProcessing || queue.length === 0) return;
+    isProcessing = true;
+    hideAlert();
+    setStage('processing');
+
+    const total = queue.length;
+    let failedCount = 0;
+
+    for (let i = 0; i < total; i++) {
+      const item = queue[i];
+      item.status = 'processing';
+      const label = total > 1 ? `${i + 1} / ${total} · ${item.file.name}` : item.file.name;
+      updateProgressUI((i / total) * 100 + 5, 'loading', label);
+
+      try {
+        const result = await removeAudioFromVideo(item.file, ({ stage, ratio }) => {
+          const overallPct = ((i + ratio) / total) * 100;
+          updateProgressUI(overallPct, stage, label);
+        });
+        item.status = 'done';
+        item.result = result;
+      } catch (err) {
+        console.error('[RemoveAudio] Failed to mute file:', item.file.name, err);
+        item.status = 'error';
+        item.errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        failedCount += 1;
+      }
+    }
+
+    isProcessing = false;
+
+    if (failedCount > 0 && failedCount < total) {
+      showAlert(getDict()['tool.errorProcess']);
+    }
+
+    renderDoneState();
+  }
+
+  // Event Wiring: Dropzone Click, Keyboard & Drag/Drop
+  dropzone?.addEventListener('click', () => {
+    fileInput?.click();
+  });
+
+  dropzone?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput?.click();
+    }
+  });
+
+  let dragDepth = 0;
+  dropzone?.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragDepth += 1;
+    dropzone.dataset.dragging = 'true';
+  });
+
+  dropzone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+  });
+
+  dropzone?.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (dragDepth === 0) {
+      dropzone.dataset.dragging = 'false';
+    }
+  });
+
+  dropzone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragDepth = 0;
+    dropzone.dataset.dragging = 'false';
+    if (e.dataTransfer?.files?.length) {
+      addFiles(e.dataTransfer.files);
+    }
+  });
+
+  // Allow dropping additional files anywhere on the card when in queued state
+  rootEl?.addEventListener('dragover', (e) => {
+    if (currentStage === 'queued') {
+      e.preventDefault();
+    }
+  });
+
+  rootEl?.addEventListener('drop', (e) => {
+    if (currentStage === 'queued' && e.dataTransfer?.files?.length) {
+      e.preventDefault();
+      addFiles(e.dataTransfer.files);
+    }
+  });
+
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files?.length) {
+      addFiles(fileInput.files);
+      fileInput.value = '';
+    }
+  });
+
+  btnAddMore?.addEventListener('click', () => {
+    fileInput?.click();
+  });
+
+  btnClearQueue?.addEventListener('click', () => {
+    cleanupResults();
+    queue = [];
+    selectedPreviewId = null;
+    hideAlert();
+    setStage('idle');
+  });
+
+  btnRemoveAudio?.addEventListener('click', () => {
+    processQueue();
+  });
+
+  btnDownloadPrimary?.addEventListener('click', () => {
+    const completed = queue.filter((i) => i.status === 'done' && i.result);
+    if (completed.length === 0) return;
+
+    if (completed.length === 1 && completed[0].result) {
+      triggerBlobDownload(completed[0].result.url, completed[0].result.outputName);
+      return;
+    }
+
+    // Stagger downloads slightly so browsers don't block multi-file downloads
+    completed.forEach((item, idx) => {
+      if (!item.result) return;
+      const { url, outputName } = item.result;
+      window.setTimeout(() => {
+        triggerBlobDownload(url, outputName);
+      }, idx * 240);
+    });
+  });
+
+  btnMuteAnother?.addEventListener('click', () => {
+    cleanupResults();
+    queue = [];
+    selectedPreviewId = null;
+    hideAlert();
+    setStage('idle');
+  });
+
+  // React to live language switches without reloading
+  window.addEventListener('removeaudio:langchange', () => {
+    if (currentStage === 'queued') {
+      renderQueuedList();
+    } else if (currentStage === 'done') {
+      renderDoneState();
+    }
+  });
+
+  // Reveal Offline Ready indicator badge once SW confirms cached FFmpeg WASM
+  window.addEventListener('removeaudio:offlineready', () => {
+    if (offlinePill) offlinePill.hidden = false;
+  });
+</script>
